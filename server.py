@@ -580,12 +580,8 @@ def main():
         logger.info(
             f"Starting {settings.mcp_server_name} server on {settings.mcp_server_host}:{settings.mcp_server_port} (HTTP mode)"
         )
-        # Run FastMCP server with HTTP transport and config values
-        mcp.run(
-            transport=transport_mode,
-            host=settings.mcp_server_host,
-            port=settings.mcp_server_port
-        )
+        # Run FastMCP server with HTTP transport
+        mcp.run(transport=transport_mode)
 
 
 if __name__ == "__main__":
