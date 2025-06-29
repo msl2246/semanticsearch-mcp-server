@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.scripts]
-semantic-scholar-mcp = "server:main"
+semanticsearch-mcp-server = "server:main"
 
 [project.urls]
 Homepage = "https://github.com/user/semanticsearch-mcp-server"
