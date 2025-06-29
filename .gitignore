@@ -8,6 +8,7 @@ wheels/
 .pytest_cache
 .ruff_cache
 .env
+.python-version
 
 # Virtual environments
 .venv

@@ -74,7 +74,7 @@ def test_mcp_complete_flow():
     
     try:
         stdout, stderr = process.communicate(input=input_data, timeout=30)
-        print(f"\n=== STDOUT ===")
+        print("\n=== STDOUT ===")
         # Parse and pretty print each response
         for line in stdout.strip().split('\n'):
             if line.strip():
