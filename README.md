@@ -2,21 +2,31 @@
 
 A comprehensive Model Context Protocol (MCP) server that provides access to the Semantic Scholar Academic Graph API with streaming HTTP support.
 
-## 🚀 Quick Start
+## 🚀 Installation & Quick Start
+
+### Recommended: One-time Installation with uv tool
 
 ```bash
-# Install and run directly
-uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semantic-scholar-mcp
+# Install once from GitHub
+uv tool install git+https://github.com/msl2246/semanticsearch-mcp-server
+
+# Run with your API key
+SEMANTIC_SCHOLAR_API_KEY=your_api_key_here semanticsearch-mcp-server
 ```
 
-## 🚀 Network Mode Quick Start
+### Alternative: Direct Execution with uvx
 
-Run the server directly from GitHub with your API key and custom settings:
+```bash
+# Run directly without installation (downloads each time)
+SEMANTIC_SCHOLAR_API_KEY=your_api_key_here uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semanticsearch-mcp-server
+```
+
+## 🚀 Advanced Usage Examples
 
 ### Basic Network Mode with API Key
 ```bash
-# Run with your API key in network mode (default)
-SEMANTIC_SCHOLAR_API_KEY=your_api_key_here uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semantic-scholar-mcp
+# After installation via uv tool install
+SEMANTIC_SCHOLAR_API_KEY=your_api_key_here semanticsearch-mcp-server
 ```
 
 ### External Access Mode
@@ -25,7 +35,7 @@ SEMANTIC_SCHOLAR_API_KEY=your_api_key_here uvx --from git+https://github.com/msl
 MCP_SERVER_HOST=0.0.0.0 \
 MCP_SERVER_PORT=5002 \
 SEMANTIC_SCHOLAR_API_KEY=your_api_key_here \
-uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semantic-scholar-mcp
+semanticsearch-mcp-server
 ```
 
 ### Custom Configuration
@@ -39,7 +49,7 @@ REQUEST_TIMEOUT=60 \
 MAX_RETRIES=5 \
 RETRY_DELAY=2 \
 SEMANTIC_SCHOLAR_API_KEY=your_api_key_here \
-uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semantic-scholar-mcp
+semanticsearch-mcp-server
 ```
 
 ### Quick Test Commands
@@ -78,14 +88,39 @@ RETRY_DELAY=1
 The server supports two transport modes via the `MCP_TRANSPORT` environment variable:
 
 ### 1. stdio Mode (For Claude Desktop Integration)
+
+First, install the tool:
 ```bash
-export MCP_TRANSPORT=stdio
-uv run python server.py
+uv tool install git+https://github.com/msl2246/semanticsearch-mcp-server
 ```
 
-#### Claude Desktop Configuration or another MCP Client
+Then run in stdio mode:
+```bash
+export MCP_TRANSPORT=stdio
+semanticsearch-mcp-server
+```
+
+#### Claude Desktop Configuration
+
 To integrate with Claude Desktop, add this to your `claude_desktop_config.json`:
 
+**Option 1: Using installed tool (Recommended)**
+```json
+{
+  "mcpServers": {
+    "semantic-scholar": {
+      "command": "semanticsearch-mcp-server",
+      "env": {
+        "MCP_TRANSPORT": "stdio",
+        "SEMANTIC_SCHOLAR_API_KEY": "your_api_key_here",
+        "MCP_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Using uvx (Alternative)**
 ```json
 {
   "mcpServers": {
@@ -94,7 +129,7 @@ To integrate with Claude Desktop, add this to your `claude_desktop_config.json`:
       "args": [
         "--from", 
         "git+https://github.com/msl2246/semanticsearch-mcp-server", 
-        "semantic-scholar-mcp"
+        "semanticsearch-mcp-server"
       ],
       "env": {
         "MCP_TRANSPORT": "stdio",
@@ -112,14 +147,31 @@ To integrate with Claude Desktop, add this to your `claude_desktop_config.json`:
 > - **Linux**: `~/.config/claude/claude_desktop_config.json`
 
 ### 2. HTTP Mode (For Network Access)
+
+First, install the tool:
+```bash
+uv tool install git+https://github.com/msl2246/semanticsearch-mcp-server
+```
+
+Then run in HTTP mode:
 ```bash
 export MCP_TRANSPORT=streamable-http  # Default mode
-uv run python server.py
+semanticsearch-mcp-server
 # Server runs on http://localhost:5002
 ```
 
 ### Development Mode with MCP Inspector
+
+For development, you can use the source code directly:
 ```bash
+# Clone the repository for development
+git clone https://github.com/msl2246/semanticsearch-mcp-server
+cd semanticsearch-mcp-server
+
+# Install dependencies
+uv sync
+
+# Run with MCP Inspector
 uv run mcp dev server.py
 # Server runs at http://localhost:6274 with MCP Inspector
 ```
@@ -138,18 +190,11 @@ uv run mcp dev server.py
 export MCP_TRANSPORT=streamable-http
 export MCP_SERVER_HOST=0.0.0.0
 export MCP_SERVER_PORT=5002
-uv run python server.py
+semanticsearch-mcp-server
 
 # Server will be available at:
 # http://your-ip-address:5002/mcp
 # http://your-ip-address:5002/sse
-```
-
-### Development with MCP Inspector
-```bash
-uv run mcp dev server.py
-# Access at: http://localhost:6274
-# Inspector token will be displayed in console
 ```
 
 ## 🛠️ Features
@@ -208,3 +253,30 @@ curl http://localhost:5002/mcp
 | `REQUEST_TIMEOUT` | HTTP timeout | 30 | Seconds |
 | `MAX_RETRIES` | Retry attempts | 3 | Number |
 | `RETRY_DELAY` | Retry delay | 1.0 | Seconds |
+
+## 🔧 Tool Management
+
+### Update to Latest Version
+```bash
+# Update the installed tool
+uv tool upgrade semanticsearch-mcp-server
+```
+
+### Uninstall
+```bash
+# Remove the installed tool
+uv tool uninstall semanticsearch-mcp-server
+```
+
+### List Installed Tools
+```bash
+# Check installed uv tools
+uv tool list
+```
+
+### Reinstall (if needed)
+```bash
+# Uninstall and reinstall
+uv tool uninstall semanticsearch-mcp-server
+uv tool install git+https://github.com/msl2246/semanticsearch-mcp-server
+```
