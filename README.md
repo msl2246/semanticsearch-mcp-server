@@ -144,7 +144,6 @@ To integrate with Claude Desktop, add this to your `claude_desktop_config.json`:
 > 📍 **Location of claude_desktop_config.json**:
 > - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 > - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-> - **Linux**: `~/.config/claude/claude_desktop_config.json`
 
 ### 2. HTTP Mode (For Network Access)
 
