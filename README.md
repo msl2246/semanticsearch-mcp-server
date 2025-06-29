@@ -9,6 +9,51 @@ A comprehensive Model Context Protocol (MCP) server that provides access to the 
 uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semantic-scholar-mcp
 ```
 
+## 🚀 Network Mode Quick Start
+
+Run the server directly from GitHub with your API key and custom settings:
+
+### Basic Network Mode with API Key
+```bash
+# Run with your API key in network mode (default)
+SEMANTIC_SCHOLAR_API_KEY=your_api_key_here uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semantic-scholar-mcp
+```
+
+### External Access Mode
+```bash
+# Run for external access (accessible from other machines)
+MCP_SERVER_HOST=0.0.0.0 \
+MCP_SERVER_PORT=5002 \
+SEMANTIC_SCHOLAR_API_KEY=your_api_key_here \
+uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semantic-scholar-mcp
+```
+
+### Custom Configuration
+```bash
+# Run with custom settings and debug logging
+MCP_TRANSPORT=streamable-http \
+MCP_SERVER_HOST=0.0.0.0 \
+MCP_SERVER_PORT=8080 \
+MCP_LOG_LEVEL=DEBUG \
+REQUEST_TIMEOUT=60 \
+MAX_RETRIES=5 \
+RETRY_DELAY=2 \
+SEMANTIC_SCHOLAR_API_KEY=your_api_key_here \
+uvx --from git+https://github.com/msl2246/semanticsearch-mcp-server semantic-scholar-mcp
+```
+
+### Quick Test Commands
+```bash
+# After starting the server, test these endpoints:
+
+curl http://localhost:5002/mcp
+
+# For external access:
+curl http://your-ip-address:5002/mcp
+```
+
+> 💡 **Tip**: Get your API key from [Semantic Scholar API](https://www.semanticscholar.org/product/api) to increase rate limits.
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -37,6 +82,34 @@ The server supports two transport modes via the `MCP_TRANSPORT` environment vari
 export MCP_TRANSPORT=stdio
 uv run python server.py
 ```
+
+#### Claude Desktop Configuration or another MCP Client
+To integrate with Claude Desktop, add this to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "semantic-scholar": {
+      "command": "uvx",
+      "args": [
+        "--from", 
+        "git+https://github.com/msl2246/semanticsearch-mcp-server", 
+        "semantic-scholar-mcp"
+      ],
+      "env": {
+        "MCP_TRANSPORT": "stdio",
+        "SEMANTIC_SCHOLAR_API_KEY": "your_api_key_here",
+        "MCP_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+> 📍 **Location of claude_desktop_config.json**:
+> - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+> - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+> - **Linux**: `~/.config/claude/claude_desktop_config.json`
 
 ### 2. HTTP Mode (For Network Access)
 ```bash
@@ -111,7 +184,6 @@ The server automatically handles rate limits:
 
 **Verify server is running:**
 ```bash
-curl http://localhost:5002/health
 curl http://localhost:5002/mcp
 ```
 
@@ -136,28 +208,3 @@ curl http://localhost:5002/mcp
 | `REQUEST_TIMEOUT` | HTTP timeout | 30 | Seconds |
 | `MAX_RETRIES` | Retry attempts | 3 | Number |
 | `RETRY_DELAY` | Retry delay | 1.0 | Seconds |
-
-
-## 🧪 Testing
-
-The test suite is located in the `tests/` directory and supports both transport modes.
-
-### stdio Mode Tests
-```bash
-export MCP_TRANSPORT=stdio
-export SEMANTIC_SCHOLAR_API_KEY=your_api_key_here
-
-# Run individual tests
-python3 tests/test_simple.py
-python3 tests/test_stdio_complete.py
-python3 tests/test_all_tools.py
-```
-
-### HTTP Mode Tests
-```bash
-export MCP_TRANSPORT=streamable-http
-export SEMANTIC_SCHOLAR_API_KEY=your_api_key_here
-
-# Run HTTP mode tests
-python3 tests/test_simple.py
-```
