@@ -570,18 +570,45 @@ Use the appropriate tools to gather this information and provide a detailed anal
 
 def main():
     """Main entry point for the Semantic Scholar MCP Server."""
-    transport_mode = get_transport_mode()
+    import argparse
     
-    if is_stdio_mode():
+    # Add command line arguments for MCP SDK compatibility
+    parser = argparse.ArgumentParser(description="Semantic Scholar MCP Server")
+    parser.add_argument("--transport", choices=["stdio", "sse", "streamable-http"], 
+                       default=get_transport_mode(), help="Transport protocol")
+    parser.add_argument("--host", default=settings.mcp_server_host, 
+                       help="Host to bind to")
+    parser.add_argument("--port", type=int, default=settings.mcp_server_port, 
+                       help="Port to bind to")
+    parser.add_argument("--log-level", default=settings.mcp_log_level, 
+                       help="Logging level")
+    parser.add_argument("--json-response", action="store_true", 
+                       help="Enable JSON responses instead of SSE")
+    
+    args = parser.parse_args()
+    
+    # Override settings with command line arguments
+    transport_mode = args.transport
+    host = args.host
+    port = args.port
+    
+    if transport_mode == "stdio":
         logger.info(f"Starting {settings.mcp_server_name} server in stdio mode")
         # Run FastMCP server with stdio transport
         mcp.run(transport=transport_mode)
     else:
         logger.info(
-            f"Starting {settings.mcp_server_name} server on {settings.mcp_server_host}:{settings.mcp_server_port} (HTTP mode)"
+            f"Starting {settings.mcp_server_name} server on {host}:{port} (HTTP mode)"
         )
-        # Run FastMCP server with HTTP transport
-        mcp.run(transport=transport_mode)
+        # For HTTP mode, we need to use uvicorn directly to control port
+        import uvicorn
+        
+        if transport_mode == "streamable-http":
+            app = mcp.streamable_http_app()
+        else:  # sse
+            app = mcp.sse_app()
+            
+        uvicorn.run(app, host=host, port=port, log_level=args.log_level.lower())
 
 
 if __name__ == "__main__":
