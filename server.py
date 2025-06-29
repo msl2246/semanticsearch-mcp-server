@@ -55,6 +55,36 @@ async def close_http_client():
         http_client = None
 
 
+def filter_open_access_pdf_disclaimer(data: Any) -> Any:
+    """
+    Recursively remove 'disclaimer' field from openAccessPdf objects in API responses.
+    This removes unnecessary legal disclaimer information that's not useful for AI applications.
+    
+    Args:
+        data: API response data (dict, list, or other)
+        
+    Returns:
+        Filtered data with disclaimer fields removed from openAccessPdf objects
+    """
+    if isinstance(data, dict):
+        filtered_data = {}
+        for key, value in data.items():
+            if key == "openAccessPdf" and isinstance(value, dict):
+                # Filter out disclaimer from openAccessPdf object
+                filtered_pdf = {k: v for k, v in value.items() if k != "disclaimer"}
+                filtered_data[key] = filtered_pdf
+            else:
+                # Recursively filter nested structures
+                filtered_data[key] = filter_open_access_pdf_disclaimer(value)
+        return filtered_data
+    elif isinstance(data, list):
+        # Filter each item in the list
+        return [filter_open_access_pdf_disclaimer(item) for item in data]
+    else:
+        # Return primitive values as-is
+        return data
+
+
 async def make_api_request(
     endpoint: str, params: Optional[Dict[str, Any]] = None, method: str = "GET"
 ) -> Dict[str, Any]:
@@ -95,7 +125,10 @@ async def make_api_request(
         
         result = response.json()
         logger.info("✅ API request successful")
-        return result
+        
+        # Filter out disclaimer from openAccessPdf fields
+        filtered_result = filter_open_access_pdf_disclaimer(result)
+        return filtered_result
 
     except httpx.HTTPStatusError as e:
         error_details = {
@@ -215,7 +248,7 @@ async def search_papers(
         "citationCount", "influentialCitationCount", "isOpenAccess", 
         "fieldsOfStudy", "s2FieldsOfStudy", "publicationTypes", 
         "publicationDate", "journal", "authors", "citations", "references",
-        "url", "publicationVenue", "externalIds"
+        "url", "publicationVenue", "externalIds", "openAccessPdf"
     }
 
     # Build API parameters using correct parameter names
@@ -637,7 +670,8 @@ async def get_available_fields() -> str:
             "references",
             "url",
             "publicationVenue",
-            "externalIds"
+            "externalIds",
+            "openAccessPdf"
         ],
         "author_fields": [
             "authorId",
