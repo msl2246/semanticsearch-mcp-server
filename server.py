@@ -574,13 +574,18 @@ def main():
     
     if is_stdio_mode():
         logger.info(f"Starting {settings.mcp_server_name} server in stdio mode")
+        # Run FastMCP server with stdio transport
+        mcp.run(transport=transport_mode)
     else:
         logger.info(
             f"Starting {settings.mcp_server_name} server on {settings.mcp_server_host}:{settings.mcp_server_port} (HTTP mode)"
         )
-
-    # Run FastMCP server with the appropriate transport
-    mcp.run(transport=transport_mode)
+        # Run FastMCP server with HTTP transport and config values
+        mcp.run(
+            transport=transport_mode,
+            host=settings.mcp_server_host,
+            port=settings.mcp_server_port
+        )
 
 
 if __name__ == "__main__":
