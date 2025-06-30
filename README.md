@@ -229,7 +229,7 @@ The server automatically handles rate limits:
 **Verify server is running:**
 ```bash
 curl http://localhost:5002/mcp
-```
+``` 
 
 ## 🔒 Security Considerations
 

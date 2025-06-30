@@ -35,7 +35,7 @@ Repository = "https://github.com/user/semanticsearch-mcp-server"
 Issues = "https://github.com/user/semanticsearch-mcp-server/issues"
 
 [tool.setuptools]
-py-modules = ["server", "config", "main"]
+py-modules = ["server", "config"]
 
 [dependency-groups]
 dev = [
